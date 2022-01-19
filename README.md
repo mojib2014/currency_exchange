@@ -1,6 +1,6 @@
 # Currency Exchange
 
-A React app that lets you get real time currency exchange info on the fly.
+A React app that lets you get real time currency exchange info on the fly, caching to reduce API calls.
 Built using `https://api.exchangerate.host` free awesome/fast API
 
 ## To deploy to Github Pages

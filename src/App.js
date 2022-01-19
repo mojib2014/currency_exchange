@@ -1,7 +1,7 @@
-import { Component } from "react";
+import React from "react";
 import "./App.css";
 
-class App extends Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.currencies = [
@@ -175,6 +175,7 @@ class App extends Component {
       "ZMW",
       "ZWL",
     ];
+    this.cached = {};
     this.state = {
       base: "USD",
       other: "AFN",
@@ -199,13 +200,26 @@ class App extends Component {
   calculateExchangeRate = () => {
     const state = this.state;
     const value = state.value > 0 ? parseFloat(state.value) : 0;
+    if (
+      this.cached[this.state.base] &&
+      Date.now() - this.cached[this.state.base].timestamp < 1000 * 60
+    ) {
+      this.setState({
+        converted: this.cached[this.state.base].rates[state.other] * value,
+      });
+      return;
+    }
     fetch(`https://api.exchangerate.host/latest?base=${state.base}`)
       .then((res) => res.json())
-      .then((data) =>
+      .then((data) => {
+        this.cached[this.state.base] = {
+          rates: data.rates,
+          timestamp: Date.now(),
+        };
         this.setState({
           converted: data.rates[state.other] * value,
-        }),
-      )
+        });
+      })
       .catch((err) => console.log("Error fetching rates: ", err));
   };
   render() {
